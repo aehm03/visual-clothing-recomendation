@@ -1,6 +1,6 @@
-from flask import Flask, Response, jsonify, request
-from flask_cors import CORS
 from PIL import Image
+from flask import Flask, Response, jsonify, request, abort
+from flask_cors import CORS
 
 # configuration
 DEBUG = True
@@ -85,6 +85,33 @@ def match():
     """
 
     return jsonify({'matches': [{'id': 123}, {'id': 456}]})
+
+
+products = {
+    123: {
+        'id': 123,
+        'category': 'short sleeve top',
+        'url': 'www.abc.de',
+        'name': 'Product 123 Name'
+    },
+    456: {
+        'id': 456,
+        'category': 'short sleeve top',
+        'url': 'www.abc.de',
+        'name': 'Product 456 Name'
+    }
+}
+
+
+@app.route('/api/product/<int:product_id>', methods=['GET'])
+def get_product(product_id):
+    """
+    Returns a single product identified by id
+    :return:  { product: [(string)]}
+    """
+    if product_id not in products.keys():
+        abort(404)
+    return jsonify({'product': products.get(product_id)})
 
 
 if __name__ == '__main__':
