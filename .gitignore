@@ -1,2 +1,4 @@
 .venv/
 .idea/
+deepfashion-raw/
+api/static/product-images/
