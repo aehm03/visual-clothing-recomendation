@@ -1,4 +1,6 @@
-// About.vue<template>
+// About.vue
+
+<template>
   <div>
     <p>About</p>
   </div>

@@ -1,5 +1,7 @@
-// Home.vue<template>
+// Home.vue
+
+<template>
   <div>
-    <p>Home page</p>
+    <p>Home Page</p>
   </div>
 </template>
