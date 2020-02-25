@@ -1,4 +1,9 @@
 .venv/
 .idea/
+
+# Deepfashion Data
 deepfashion-raw/
 api/static/product-images/
+
+# Logs
+npm-debug.log

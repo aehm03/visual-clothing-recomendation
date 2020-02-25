@@ -1,5 +1,7 @@
 from PIL import Image
-from flask import Flask, Response, jsonify, request, abort
+
+from flask import Flask, Response, jsonify, request, abort, render_template
+
 from flask_cors import CORS
 
 # configuration
@@ -7,7 +9,7 @@ DEBUG = True
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 # instantiate the app
-app = Flask(__name__)
+app = Flask(__name__, static_folder="../frontend/dist/static", template_folder="../frontend/dist")
 app.config.from_object(__name__)
 
 # enable CORS
@@ -23,7 +25,7 @@ def frontend():
     Serves the frontend of the application.
     :return: frontend index.html
     """
-    return 'hello, wordl'
+    return render_template("index.html")
 
 
 def allowed_file(filename):
