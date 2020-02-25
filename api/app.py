@@ -1,16 +1,26 @@
+import atexit
+import os
+import shutil
+import tempfile
+import uuid
+
 from PIL import Image
 
-from flask import Flask, Response, jsonify, request, abort, render_template
+from flask import Flask, Response, jsonify, request, abort, render_template, abort, url_for, send_from_directory
+
 
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 
 # configuration
 DEBUG = True
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+UPLOAD_FOLDER = tempfile.mkdtemp()
 
 # instantiate the app
 app = Flask(__name__, static_folder="../frontend/dist/static", template_folder="../frontend/dist")
 app.config.from_object(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # enable CORS
 # TODO replace cors with other method for vue frontend
@@ -48,13 +58,17 @@ def detection():
     if file.filename == '':
         return Response('[DETECT] empty file part', status=400)
 
-    if file and not allowed_file(file.filename):
+    if not allowed_file(file.filename):
         return Response(file.filename + '[DETECT] is not in allowed extensions ' + ALLOWED_EXTENSIONS, status=400)
 
+    filename = secure_filename(str(uuid.uuid4()) + '.' + file.filename.split('.')[-1])
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
     img = Image.open(file.stream)
+    url = url_for('uploaded_file', filename=filename)
 
     # Currently we return a box that covers the whole image and contains a short_sleeve_top
-    return jsonify({'items': [{'category': 'short sleeve top', 'box': [0, 0, *img.size]}]})
+    return jsonify({'image_url': url, 'items': [{'category': 'short sleeve top', 'box': [0, 0, *img.size]}]})
 
 
 @app.route('/api/match/categories')
@@ -114,6 +128,26 @@ def get_product(product_id):
     if product_id not in products.keys():
         abort(404)
     return jsonify({'product': products.get(product_id)})
+
+
+@app.route('/uploads/<filename>', methods=['GET'])
+def uploaded_file(filename):
+    """
+    Routes the uploaded file URL's to the actual upload folder
+    :param filename:
+    :return:
+    """
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
+
+
+@atexit.register
+def delete_files():
+    """
+    Cleans up the temporary upload-folder
+    :return:
+    """
+    shutil.rmtree(app.config['UPLOAD_FOLDER'])
 
 
 if __name__ == '__main__':
