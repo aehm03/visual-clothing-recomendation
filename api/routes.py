@@ -1,33 +1,14 @@
-import atexit
 import os
-import shutil
-import tempfile
 import uuid
 
 from PIL import Image
-
-from flask import Flask, Response, jsonify, request, abort, render_template, abort, url_for, send_from_directory
-
-
-from flask_cors import CORS
+from api import app
+from flask import Response, abort, jsonify, request, render_template, url_for, send_from_directory
+from models import Product
 from werkzeug.utils import secure_filename
 
-# configuration
-DEBUG = True
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-UPLOAD_FOLDER = tempfile.mkdtemp()
 
-# instantiate the app
-app = Flask(__name__, static_folder="../frontend/dist/static", template_folder="../frontend/dist")
-app.config.from_object(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# enable CORS
-# TODO replace cors with other method for vue frontend
-CORS(app, resources={r'/*': {'origins': '*'}})
-
-
-# TODO which kind of data are the requests, form, json, wat?
 
 @app.route('/')
 def frontend():
@@ -103,31 +84,16 @@ def match():
     return jsonify({'matches': [{'id': 123}, {'id': 456}]})
 
 
-products = {
-    123: {
-        'id': 123,
-        'category': 'short sleeve top',
-        'url': 'www.abc.de',
-        'name': 'Product 123 Name'
-    },
-    456: {
-        'id': 456,
-        'category': 'short sleeve top',
-        'url': 'www.abc.de',
-        'name': 'Product 456 Name'
-    }
-}
-
-
 @app.route('/api/product/<int:product_id>', methods=['GET'])
 def get_product(product_id):
     """
     Returns a single product identified by id
     :return:  { product: [(string)]}
     """
-    if product_id not in products.keys():
+    p = Product.query.get(product_id)
+    if p is None:
         abort(404)
-    return jsonify({'product': products.get(product_id)})
+    return jsonify({'product_id': p.product_id, 'category_id': p.category_id, 'images': p.images.split(',')})
 
 
 @app.route('/uploads/<filename>', methods=['GET'])
@@ -139,16 +105,3 @@ def uploaded_file(filename):
     """
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
-
-
-@atexit.register
-def delete_files():
-    """
-    Cleans up the temporary upload-folder
-    :return:
-    """
-    shutil.rmtree(app.config['UPLOAD_FOLDER'])
-
-
-if __name__ == '__main__':
-    app.run()
