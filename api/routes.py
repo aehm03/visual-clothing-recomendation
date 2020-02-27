@@ -1,21 +1,14 @@
-from PIL import Image
-from flask import Flask, Response, jsonify, request, abort
-from flask_cors import CORS
+import os
+import uuid
 
-# configuration
-DEBUG = True
+from PIL import Image
+from api import app
+from flask import Response, abort, jsonify, request, render_template, url_for, send_from_directory
+from models import Product
+from werkzeug.utils import secure_filename
+
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-# instantiate the app
-app = Flask(__name__)
-app.config.from_object(__name__)
-
-# enable CORS
-# TODO replace cors with other method for vue frontend
-CORS(app, resources={r'/*': {'origins': '*'}})
-
-
-# TODO which kind of data are the requests, form, json, wat?
 
 @app.route('/')
 def frontend():
@@ -23,7 +16,7 @@ def frontend():
     Serves the frontend of the application.
     :return: frontend index.html
     """
-    return 'hello, wordl'
+    return render_template("index.html")
 
 
 def allowed_file(filename):
@@ -46,13 +39,17 @@ def detection():
     if file.filename == '':
         return Response('[DETECT] empty file part', status=400)
 
-    if file and not allowed_file(file.filename):
+    if not allowed_file(file.filename):
         return Response(file.filename + '[DETECT] is not in allowed extensions ' + ALLOWED_EXTENSIONS, status=400)
 
+    filename = secure_filename(str(uuid.uuid4()) + '.' + file.filename.split('.')[-1])
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
     img = Image.open(file.stream)
+    url = url_for('uploaded_file', filename=filename)
 
     # Currently we return a box that covers the whole image and contains a short_sleeve_top
-    return jsonify({'items': [{'category': 'short sleeve top', 'box': [0, 0, *img.size]}]})
+    return jsonify({'image_url': url, 'items': [{'category': 'short sleeve top', 'box': [0, 0, *img.size]}]})
 
 
 @app.route('/api/match/categories')
@@ -87,32 +84,24 @@ def match():
     return jsonify({'matches': [{'id': 123}, {'id': 456}]})
 
 
-products = {
-    123: {
-        'id': 123,
-        'category': 'short sleeve top',
-        'url': 'www.abc.de',
-        'name': 'Product 123 Name'
-    },
-    456: {
-        'id': 456,
-        'category': 'short sleeve top',
-        'url': 'www.abc.de',
-        'name': 'Product 456 Name'
-    }
-}
-
-
 @app.route('/api/product/<int:product_id>', methods=['GET'])
 def get_product(product_id):
     """
     Returns a single product identified by id
     :return:  { product: [(string)]}
     """
-    if product_id not in products.keys():
+    p = Product.query.get(product_id)
+    if p is None:
         abort(404)
-    return jsonify({'product': products.get(product_id)})
+    return jsonify({'product_id': p.product_id, 'category_id': p.category_id, 'images': p.images.split(',')})
 
 
-if __name__ == '__main__':
-    app.run()
+@app.route('/uploads/<filename>', methods=['GET'])
+def uploaded_file(filename):
+    """
+    Routes the uploaded file URL's to the actual upload folder
+    :param filename:
+    :return:
+    """
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)

@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append('.')
+
 import argparse
 import json
 import os
@@ -5,6 +9,9 @@ import re
 from glob import glob
 
 import pandas as pd
+from . import app, db
+from models import Product
+from sqlalchemy_utils import create_database, database_exists
 from tqdm import tqdm
 
 
@@ -15,6 +22,9 @@ def parse_args():
 
 
 if __name__ == '__main__':
+
+    print(app.config)
+
     args = parse_args()
     path = os.path.join(args.deepfashion_annos, '*.json')
 
@@ -33,7 +43,6 @@ if __name__ == '__main__':
                                           'pair_id': annotation['pair_id']})
 
     item_df = pd.DataFrame(item_list)
-    print('DONE')
 
     # filter on short sleeve tops (category_id == 1)
     # items with style 0 have no match
@@ -42,7 +51,13 @@ if __name__ == '__main__':
     # group by product
     products = item_df.groupby(['pair_id', 'category_id', 'style'])['image_id'].apply(','.join).reset_index()
 
-    # iterate over products
+    if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
+        create_database(app.config['SQLALCHEMY_DATABASE_URI'])
+    db.create_all()
+
+    # iterate over products and fill database
     for idx, row in products.iterrows():
-        print(idx, row['image_id'])
-        break
+        product = Product(product_id=idx, category_id=row['category_id'], images=row['image_id'])
+        db.session.add(product)
+
+    db.session.commit()

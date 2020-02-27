@@ -1,4 +1,11 @@
 .venv/
 .idea/
+api/api.egg-info/
+
+# Deepfashion Data
 deepfashion-raw/
 api/static/product-images/
+products.db
+
+# Logs
+npm-debug.log
