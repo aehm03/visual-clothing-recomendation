@@ -18,3 +18,5 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///products.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+from api import routes

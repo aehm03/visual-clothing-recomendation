@@ -9,7 +9,7 @@ import re
 from glob import glob
 
 import pandas as pd
-from . import app, db
+from api import app, db
 from models import Product
 from sqlalchemy_utils import create_database, database_exists
 from tqdm import tqdm
