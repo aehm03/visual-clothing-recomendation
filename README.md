@@ -1,6 +1,5 @@
 # vip-retrieval-demo
 
-test api with curl: `curl -F file=@test.jpg  http://localhost:5000/api/detect`
 
 
 # Setup
@@ -18,6 +17,7 @@ test api with curl: `curl -F file=@test.jpg  http://localhost:5000/api/detect`
 Python code in `api/detection` is taken from `vip-deepfashion` anc slightly modified.
 Model weights must downloaded from `https://speicherwolke.uni-leipzig.de/index.php/s/4WnNkGHn5rjzqc3` and copied to `api/detection/detection_weights.pkl`.
 
+Test detection api: `curl -F file=@test.jpg  http://localhost:5000/api/detect`
 
 
 ## Setup frontend
