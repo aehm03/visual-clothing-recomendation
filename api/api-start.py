@@ -14,5 +14,4 @@ def delete_files():
 
 
 if __name__ == '__main__':
-    print(app.config['UPLOAD_FOLDER'])
     app.run()

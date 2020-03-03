@@ -9,3 +9,6 @@ products.db
 
 # Logs
 npm-debug.log
+
+# Model weights
+*.pkl
