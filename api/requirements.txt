@@ -1,3 +1,5 @@
+torchvision
+torch
 tqdm
 pandas
 Click==7.0

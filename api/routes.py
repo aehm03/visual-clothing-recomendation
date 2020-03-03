@@ -3,6 +3,7 @@ import uuid
 
 from PIL import Image
 from api import app
+from detection.detection import detect
 from flask import Response, abort, jsonify, request, render_template, url_for, send_from_directory
 from models import Product
 from werkzeug.utils import secure_filename
@@ -48,8 +49,7 @@ def detection():
     img = Image.open(file.stream)
     url = url_for('uploaded_file', filename=filename)
 
-    # Currently we return a box that covers the whole image and contains a short_sleeve_top
-    return jsonify({'image_url': url, 'items': [{'category': 'short sleeve top', 'box': [0, 0, *img.size]}]})
+    return jsonify({'image_url': url, 'items': detect(img)})
 
 
 @app.route('/api/match/categories')
