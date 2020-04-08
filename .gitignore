@@ -6,6 +6,9 @@ api/api.egg-info/
 deepfashion-raw/
 api/static/product-images/
 products.db
+api/match/embedding_to_product.pickle
+api/match/embeddings.ann
+embeddings/short_sleeve_tops_training_embeddings.csv
 
 # Logs
 npm-debug.log
