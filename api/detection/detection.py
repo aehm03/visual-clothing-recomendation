@@ -5,7 +5,7 @@ from detection.utils import *
 from torchvision import transforms
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-checkpoint = os.path.abspath('detection/detection_weights.pkl')
+checkpoint = os.path.join(os.path.dirname(__file__), 'detection_weights.pkl')
 
 # create model as in training because I only saved the state_dict
 model = SSD300(n_classes=14)

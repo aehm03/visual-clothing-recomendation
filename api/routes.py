@@ -5,7 +5,9 @@ from PIL import Image
 from api import app
 from detection.detection import detect
 from flask import Response, abort, jsonify, request, render_template, url_for, send_from_directory
+from match.match import match_products
 from models import Product
+from werkzeug.exceptions import BadRequest
 from werkzeug.utils import secure_filename
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -77,11 +79,28 @@ def categories():
 @app.route('/api/match', methods=['POST'])
 def match():
     """
-    Matches the given product with the catalog and returns n similar products
-    :return:
+    Matches the given product with the catalog and returns up to 5 similar products.
+    Request body must be of type json and contain
+    - image: filename of previously uploaded image
+    - category: not yet used
+    optional:
+    -b box: coordinates to crop the image
+    :return: {'matches': [list of ids]]}
     """
 
-    return jsonify({'matches': [{'id': 123}, {'id': 456}]})
+    content = request.get_json()
+    box = content['box']
+    filename = os.path.join(app.config['UPLOAD_FOLDER'], content['image'])
+
+    try:
+        img = Image.open(filename)
+        if box is not None:
+            img = Image.open(filename).crop(box)
+
+        matches = match_products(img)
+        return jsonify({'matches': matches})
+    except FileNotFoundError:
+        raise BadRequest()
 
 
 @app.route('/api/product/<int:product_id>', methods=['GET'])
