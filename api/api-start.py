@@ -14,4 +14,5 @@ def delete_files():
 
 
 if __name__ == '__main__':
+    from api import routes
     app.run()
