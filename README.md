@@ -23,7 +23,7 @@ Test matching: `curl -v POST http://localhost:5000/api/match -d @test_match.json
 
 ## Convert DeepFashion2 Dataset into product catalog
 * Download and unzip `train.zip` from https://github.com/switchablenorms/DeepFashion2 into `deepfashion-raw`
-* Download dataset of all short sleeve top fashion items and their embeddings from XXX and copy to: `embeddings/short_sleeve_tops_training_embeddings.csv`
+* Download dataset of all short sleeve top fashion items and their embeddings from https://speicherwolke.uni-leipzig.de/index.php/s/HjSTBbmKzqaTx4X and copy to: `embeddings/short_sleeve_tops_training_embeddings.csv`
 * (Activate virtualenv)
 * Run `python api/db_setup.py --deepfashion_embeddings=embeddings/short_sleeve_tops_training_embeddings.csv` to create product database
 * Move images: `mv deepfashion-raw/train/image  api/static/product-images/`
