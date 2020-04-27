@@ -3,10 +3,10 @@ import uuid
 
 from PIL import Image
 from api import app
-from detection.detection import detect
+from api.detection.detection import detect
 from flask import Response, abort, jsonify, request, render_template, url_for, send_from_directory
-from match.match import match_products
-from models import Product
+from api.match.match import match_products
+from api.models import Product
 from werkzeug.exceptions import BadRequest
 from werkzeug.utils import secure_filename
 

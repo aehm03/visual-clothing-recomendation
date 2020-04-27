@@ -1,7 +1,7 @@
 import os
 
-from detection.model import SSD300
-from detection.utils import *
+from api.detection.model import SSD300
+from api.detection.utils import *
 from torchvision import transforms
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

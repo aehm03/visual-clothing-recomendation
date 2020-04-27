@@ -8,7 +8,7 @@ import argparse
 from annoy import AnnoyIndex
 import pandas as pd
 from api import app, db
-from models import Product
+from api.models import Product
 from sqlalchemy_utils import create_database, database_exists
 
 

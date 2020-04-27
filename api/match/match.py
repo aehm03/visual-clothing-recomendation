@@ -3,7 +3,7 @@ import pickle
 
 import torch
 from annoy import AnnoyIndex
-from match.model import EmbedNetwork
+from api.match.model import EmbedNetwork
 from torch import nn
 from torchvision import transforms
 

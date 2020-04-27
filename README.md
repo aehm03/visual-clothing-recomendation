@@ -3,7 +3,7 @@
 
 
 # Setup
-* Create and activate virtualenv for backend in `.venv`
+* Create and activate virtualenv for backend in `venv`
 
 ## Detection Model
 
