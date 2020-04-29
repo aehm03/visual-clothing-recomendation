@@ -44,4 +44,5 @@ def match_products(image, n_matches=5):
     # we take n*three, map to product unique id and truncate at n
     # could still be less than n
     nearest = u.get_nns_by_vector(embedding, n=n_matches * 3)
-    return [x for i, x in enumerate(nearest) if nearest.index(x) == i][0:n_matches]
+    nearest_product = [embedding_to_product[image] for image in nearest]
+    return [x for i, x in enumerate(nearest_product) if nearest_product.index(x) == i][0:n_matches]
