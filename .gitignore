@@ -2,6 +2,7 @@
 venv/
 .idea/
 api/api.egg-info/
+**/__pycache__/
 
 # Deepfashion Data
 deepfashion-raw/
