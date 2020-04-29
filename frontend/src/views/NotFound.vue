@@ -2,6 +2,6 @@
 
 <template>
   <div>
-    <p>404 - Not Found</p>
+    <h1>404 - Not Found</h1>
   </div>
 </template>

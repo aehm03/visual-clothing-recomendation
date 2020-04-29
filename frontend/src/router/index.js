@@ -1,18 +1,41 @@
 import Vue from 'vue'
-import Router from 'vue-router'
-const routerOptions = [
-  { path: '/', component: 'Home' },
-  { path: '/about', component: 'About' },
-  { path: '*', component: 'NotFound' }
-]
-const routes = routerOptions.map(route => {
-  return {
-    ...route,
-    component: () => import(`@/components/${route.component}.vue`)
+import VueRouter from 'vue-router'
+import About from '../views/About'
+import Upload from '../views/Upload'
+import NotFound from '../views/NotFound'
+import WebCam from '../views/WebCam'
+
+Vue.use(VueRouter)
+
+const routes = [
+  {
+    path: '/',
+    name: 'about',
+    component: About
+  },
+  {
+    path: '/upload',
+    name: 'upload',
+    component: Upload,
+    props: true
+  },
+  {
+    path: '/webcam',
+    name: 'webcam',
+    component: WebCam,
+    props: true
+  },
+  {
+    path: '*',
+    name: 'notfound',
+    component: NotFound,
+    props: true
   }
+]
+
+const router = new VueRouter({
+  mode: 'history',
+  routes
 })
-Vue.use(Router)
-export default new Router({
-  routes,
-  mode: 'history'
-})
+
+export default router

@@ -54,6 +54,17 @@ def detection():
     return jsonify({'image_url': url, 'items': detect(img)})
 
 
+@app.route('/api/image/<string:image_id>', methods=['GET'])
+def get_image(image_id):
+    """
+    returns a product image
+    :param image_id:
+    :return:
+    """
+    filename = secure_filename(image_id + '.jpg')
+    return send_from_directory(app.config['PRODUCT_IMAGE_FOLDER'], filename)
+
+
 @app.route('/api/match/categories')
 def categories():
     """
