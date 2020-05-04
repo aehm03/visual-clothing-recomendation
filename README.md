@@ -1,6 +1,6 @@
 # vip-retrieval-demo
 
-
+![](vip-retrieval.mp4)
 
 # Setup
 * Create and activate virtualenv for backend in `venv`
