@@ -91,27 +91,5 @@ export default {
 </script>
 
 <style scoped>
-  .camera {
-    box-sizing: border-box;
-  }
 
-  .feed {
-    display: block;
-    width: 560px;
-    margin: 0 auto;
-    background-color: #171717;
-    box-shadow: 6px 6px 12px 0 rgba(0, 0, 0, 0.35);
-  }
-
-  .gallery {
-    box-sizing: border-box;
-  }
-
-  canvas {
-    display: block;
-    width: 560px;
-    margin: 0 auto;
-    background-color: #171717;
-    box-shadow: 6px 6px 12px 0 rgba(0, 0, 0, 0.35);
-  }
 </style>

@@ -46,10 +46,5 @@ export default {
 </script>
 
 <style scoped>
-  .flex {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    vertical-align: middle;
-}
+
 </style>

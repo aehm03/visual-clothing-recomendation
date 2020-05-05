@@ -139,33 +139,5 @@ export default {
 </script>
 
 <style scoped>
-  rect{
-    fill: none;
-    pointer-events: all;
-    cursor: crosshair;
-  }
-  rect:hover{
-    fill: #00aeef;
-    opacity: 0.4;
-    stroke-opacity:1
-  }
-  a:hover {
-  color: #00aeef;
-  text-decoration: underline;
-    cursor: pointer
-}
-  .flex {
-    justify-content: center;
-    margin-bottom: 5px;
-}
-  .matching-image {
-    margin-right: 5px;
-  }
-  #product_image {
-    display: block;
-    box-sizing: border-box;
-        margin: 0 auto;
-
-  }
 
 </style>

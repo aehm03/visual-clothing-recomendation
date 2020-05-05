@@ -18,8 +18,5 @@ export default {
 </script>
 
 <style scoped>
-  .logo {
-    padding-top: 20rem;
-  }
 
 </style>
