@@ -21,10 +21,5 @@ export default {
 </script>
 
 <style scoped>
-  .prodImage {
-    max-height: 100px;
-    width: auto;
-    margin-right: 5px;
-  }
 
 </style>

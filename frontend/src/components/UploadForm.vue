@@ -74,10 +74,5 @@ export default {
 </script>
 
 <style scoped>
-#formatWarning {
-  margin-top: 10px;
-}
-.mr-3 {
-  margin-top: 10px;
-}
+
 </style>
