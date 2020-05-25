@@ -1,3 +1,4 @@
+/* Camera.vue */
 .camera {
     box-sizing: border-box;
   }
@@ -21,11 +22,33 @@ canvas {
   background-color: #171717;
   box-shadow: 6px 6px 12px 0 rgba(0, 0, 0, 0.35);
 }
-
+/* MatchingProduct.vue */
+.prodImGrid {
+  justify-content: space-around;
+}
 .prodImage {
     max-height: 100px;
     width: auto;
-    margin-right: 5px;
+    margin: 5px;
+    border-radius: 5px;
+}
+.crop-container {
+  border-radius: 5px;
+  box-shadow: 3px 3px 3px lightgray;
+}
+.flex {
+  border-radius: 5px;
+  box-shadow: 3px 3px 3px lightgray;
+}
+.detected {
+  margin-top: 10px;
+}
+.product_image_matches {
+  width: 100px;
+}
+.crop-container {
+  width: 100px;
+  overflow: hidden;
 }
 
 .nav {
@@ -334,4 +357,33 @@ html {
   }
   select::ms-expand {
     opacity: 0;
+  }
+  .spinner {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .spin-container {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    z-index: 2;
+    background: rgba(30, 30, 30, 0.1);
+    border-radius: 50px;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  .detect-item-card {
+    width: 100%;
+    margin: 5px;
+  }
+  .detect-item-card:hover {
+    background: #edf6ff;
+    cursor: pointer;
   }

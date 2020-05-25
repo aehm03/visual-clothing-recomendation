@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <h3>Product</h3>
+  <div class="prodImGrid">
     <img v-for="imageUrl in imageUrls" :key="imageUrl" class="prodImage" :src="imageUrl"/>
   </div>
 </template>
@@ -14,7 +13,7 @@ export default {
   },
   data () {
     return {
-      imageUrls: this.product.images.map(i => 'http://localhost:5000/api/image/' + i)
+      imageUrls: this.product.images.map(i => process.env.ROOT_API + 'api/image/' + i)
     }
   }
 }
