@@ -13,6 +13,9 @@ export default {
   components: {
     Info,
     VIPLogo
+  },
+  created () {
+    console.log(process.env)
   }
 }
 </script>

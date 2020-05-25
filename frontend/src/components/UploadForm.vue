@@ -3,6 +3,14 @@
     <b-container class="bv-example-row" fluid="true">
       <b-row>
         <b-col class="box">
+          <div class="spin-container" v-show="loading">
+            <atom-spinner
+            :animation-duration="1000"
+            :size="60"
+            color="#00aeef"
+            class="spinner"
+            />
+          </div>
           <p>Upload a picture to detect fashion-items!</p>
           <b-form-file
             accept="image/*"
@@ -28,8 +36,10 @@
 </template>
 
 <script>
+import { AtomSpinner } from 'epic-spinners'
 export default {
   name: 'UploadForm',
+  components: {AtomSpinner},
   data () {
     return {
       file: null,
@@ -38,7 +48,8 @@ export default {
         height: 0,
         ratio: 0
       },
-      forbiddenFormat: false
+      forbiddenFormat: false,
+      loading: false
     }
   },
   watch: {
@@ -56,6 +67,7 @@ export default {
   },
   methods: {
     submit () {
+      this.loading = true
       let reader = new FileReader()
       reader.readAsDataURL(this.file)
       reader.onload = evt => {

@@ -1,41 +1,43 @@
 <template>
   <div>
     <h3>Result:</h3>
-    <div class="flex">
+    <div >
     <svg width="560" :height="(560*imageDimensions.ratio)" class="flex"
          xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <image v-bind:href="this.image_url" width="560"  id="product_image"/>
+      <a v-for="(item, index)  in items" :key="index"
+        v-b-toggle="'collapse-'+index"
+        @click="jumpto(index)">
       <rect
-                  v-for="(item, index)  in items" :key="index"
                   v-bind:y="y(item.box[1])"
                   v-bind:x="x(item.box[0])"
                   v-bind:width="(width (item.box[2], item.box[0]))"
                   v-bind:height="(height(item.box[3], item.box[1]))"
                   style="stroke:#00aeef;stroke-width:2;stroke-opacity:0.9;"
-                  v-b-toggle="'collapse-'+index"
                   rx="5" ry="5"
-      ><title>{{item.category}}</title></rect>
+      ><title>{{item.category}}</title></rect></a>
     </svg>
     </div>
-    <b-card title="Detected fashion items:" style="max-width: 100%;">
-      <li v-for="(item, index) in items" :key="index"
+    <b-card title="Detected fashion items:" style="max-width: 100%;" id="detected" class="detected">
+      <div v-for="(item, index) in items" :key="index"
           class="item"
           v-b-toggle="'collapse-'+index"
-      ><a>{{item.category}}</a>
+      >
+        <b-card class="detect-item-card">
+        <DetectedImage :image="image_url" :box="item.box" :imageDimensions="imageDimensions" :id="index"/>
+        <a>{{item.category}}</a>
         <b-collapse :id="'collapse-'+index" class="mt-2">
-          <b-card title="Matching Products:">
-            <b-container>
+            <h5>Matching Products:</h5>
             <b-col>
-              <b-row>
-                <div v-if="item.match_products" v-for="product in item.match_products" :key="product">
+              <b-row v-if="item.match_products">
+                <div v-for="(product, index) in item.match_products" :key="index">
                   <td class="matching-image"><MatchingProduct v-bind:product="product"/></td>
                 </div>
               </b-row>
             </b-col>
-            </b-container>
-          </b-card>
         </b-collapse>
-      </li>
+        </b-card>
+      </div>
       <br>
       <b-button block class="mr-3" variant="outline-primary" @click="UploadAnotherPicture">{{ this.buttonMessage }}</b-button>
     </b-card>
@@ -46,11 +48,12 @@
 <script>
 import APIService from '../services/APIService'
 import MatchingProduct from './MatchingProduct'
+import DetectedImage from './DetectedImage'
 import Vue from 'vue'
 
 export default {
   name: 'Result',
-  components: { MatchingProduct },
+  components: { MatchingProduct, DetectedImage },
   props: {
     serverResponse: Object,
     imageDimensions: Object,
@@ -64,22 +67,29 @@ export default {
   },
 
   created: function () {
-    this.image_url = 'http://localhost:5000' + this.serverResponse.image_url
+    this.image_url = process.env.ROOT_API + this.serverResponse.image_url
     this.items = this.serverResponse.items
 
     this.items.forEach((item) => {
-      this.requestMatches(item).then(response => {
-        Vue.set(item, 'match_ids', response.data.matches)
+      if (item.category === 'short sleeve top') {
+        this.requestMatches(item).then(response => {
+          Vue.set(item, 'match_ids', response.data.matches)
 
-        Vue.set(item, 'match_products', [])
-        const promises = this.getProducts(item)
-        promises.forEach(p => p.then(product => {
-          item.match_products.push(product)
-        }))
-      })
+          Vue.set(item, 'match_products', [])
+          const promises = this.getProducts(item)
+          promises.forEach(p => p.then(product => {
+            item.match_products.push(product)
+          }))
+        })
+      }
     })
   },
   methods: {
+    jumpto (index) {
+      window.setTimeout(function () {
+        document.getElementById(index).scrollIntoView()
+      }, 200)
+    },
     getProducts (item) {
       return item.match_ids.map(id => {
         return APIService.getProduct(id).then(response => {
