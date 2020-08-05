@@ -22,7 +22,7 @@ model.load_state_dict(torch.load(checkpoint, map_location=device))
 model.eval()
 
 # initialize index to retrieve nearest embeddings
-u = AnnoyIndex(128, 'angular')
+u = AnnoyIndex(128, 'euclidean')
 u.load(os.path.join(os.path.dirname(__file__), 'embeddings.ann'))
 embedding_to_product = {}
 with open(os.path.join(os.path.dirname(__file__), 'embedding_to_product.pickle'), 'rb') as file:

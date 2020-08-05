@@ -1,3 +1,4 @@
+import math
 import os
 import pickle
 import sys
@@ -21,14 +22,14 @@ def parse_args():
 if __name__ == '__main__':
 
     args = parse_args()
-    item_df = pd.read_csv(args.deepfashion_embeddings, dtype={'image_id': object})
+    item_df = pd.read_json(args.deepfashion_embeddings, orient='table')
 
     # filter on short sleeve tops (category_id == 1)
     # items with style 0 have no match
     item_df = item_df.loc[(item_df['category_id'] == 1) & (item_df['style'] > 0)]
 
     # group by product
-    products = item_df.groupby(['group_id'])['image_id'].apply(','.join)
+    products = item_df.groupby(['item_group_id'])['image_id'].apply(','.join)
 
     if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
         create_database(app.config['SQLALCHEMY_DATABASE_URI'])
@@ -44,12 +45,15 @@ if __name__ == '__main__':
     db.session.commit()
 
     # create index for matching
-    embedding_index = AnnoyIndex(128, 'angular')
+    embedding_index = AnnoyIndex(128, 'euclidean')
     embedding_index.on_disk_build(os.path.abspath('api/match/embeddings.ann'))
+    embedding_to_product = {}
     for i, row in item_df.iterrows():
-        embedding_index.add_item(i, row[4:132].array)
-    embedding_index.build(10)
-    # create dict embedding_id -> product_id
-    embedding_to_product = item_df['group_id'].to_dict()
+        embedding_index.add_item(i, row['embedding_vector'])
+        embedding_to_product[i] = row['item_group_id']
+
+    n_trees = 4 * int(math.sqrt(len(item_df)))
+    embedding_index.build(n_trees)
+
     with open(os.path.abspath('api/match/embedding_to_product.pickle'), 'wb') as file:
         pickle.dump(embedding_to_product, file)
