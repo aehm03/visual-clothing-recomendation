@@ -1,46 +1,48 @@
 <template>
   <div>
     <h3>Result:</h3>
-    <div >
-    <svg width="560" :height="(560*imageDimensions.ratio)" class="flex"
-         xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <image v-bind:href="this.image_url" width="560"  id="product_image"/>
-      <a v-for="(item, index)  in items" :key="index"
-        v-b-toggle="'collapse-'+index"
-        @click="jumpto(index)">
-      <rect
-                  v-bind:y="y(item.box[1])"
-                  v-bind:x="x(item.box[0])"
-                  v-bind:width="(width (item.box[2], item.box[0]))"
-                  v-bind:height="(height(item.box[3], item.box[1]))"
-                  style="stroke:#00aeef;stroke-width:2;stroke-opacity:0.9;"
-                  rx="5" ry="5"
-      ><title>{{item.category}}</title></rect></a>
-    </svg>
-    </div>
-    <b-card title="Detected fashion items:" style="max-width: 100%;" id="detected" class="detected">
-      <div v-for="(item, index) in items" :key="index"
-          class="item"
+    <div class="result-wrapper" id="result-wrapper">
+      <div >
+      <svg width="560" :height="(560*imageDimensions.ratio)" class="flex"
+          xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <image v-bind:href="this.image_url" width="560"  id="product_image"/>
+        <a v-for="(item, index)  in items" :key="index"
           v-b-toggle="'collapse-'+index"
-      >
-        <b-card class="detect-item-card">
-        <DetectedImage :image="image_url" :box="item.box" :imageDimensions="imageDimensions" :id="index"/>
-        <a>{{item.category}}</a>
-        <b-collapse :id="'collapse-'+index" class="mt-2">
-            <h5>Matching Products:</h5>
-            <b-col>
-              <b-row v-if="item.match_products">
-                <div v-for="(product, index) in item.match_products" :key="index">
-                  <td class="matching-image"><MatchingProduct v-bind:product="product"/></td>
-                </div>
-              </b-row>
-            </b-col>
-        </b-collapse>
-        </b-card>
+          @click="jumpto(index)">
+        <rect
+                    v-bind:y="y(item.box[1])"
+                    v-bind:x="x(item.box[0])"
+                    v-bind:width="(width (item.box[2], item.box[0]))"
+                    v-bind:height="(height(item.box[3], item.box[1]))"
+                    style="stroke:#00aeef;stroke-width:2;stroke-opacity:0.9;"
+                    rx="5" ry="5"
+        ><title>{{item.category}}</title></rect></a>
+      </svg>
       </div>
-      <br>
-      <b-button block class="mr-3" variant="outline-primary" @click="UploadAnotherPicture">{{ this.buttonMessage }}</b-button>
-    </b-card>
+      <b-card title="Detected fashion items:" id="detected" class="detected">
+        <div v-for="(item, index) in items" :key="index"
+            class="item"
+            v-b-toggle="'collapse-'+index"
+        >
+          <b-card class="detect-item-card">
+          <DetectedImage :image="image_url" :box="item.box" :imageDimensions="imageDimensions" :id="index"/>
+          <a>{{item.category}}</a>
+          <b-collapse :id="'collapse-'+index" class="mt-2">
+              <h5>Matching Products:</h5>
+              <b-col>
+                <b-row v-if="item.match_products">
+                  <div v-for="(product, index) in item.match_products" :key="index">
+                    <td class="matching-image"><MatchingProduct v-bind:product="product"/></td>
+                  </div>
+                </b-row>
+              </b-col>
+          </b-collapse>
+          </b-card>
+        </div>
+        <br>
+        <b-button block class="mr-3" variant="outline-primary" @click="UploadAnotherPicture">{{ this.buttonMessage }}</b-button>
+      </b-card>
+    </div>
     <br>
   </div>
 </template>
@@ -65,7 +67,24 @@ export default {
       image_url: null
     }
   },
-
+  destroyed: function () {
+    let app = document.getElementById('app')
+    app.setAttribute('style', 'width: 600px;')
+  },
+  beforeCreate: function () {
+    const viewwidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+    console.log(viewwidth)
+    if (viewwidth >= 1200) {
+      let app = document.getElementById('app')
+      app.setAttribute('style', 'width: 1200px;')
+    }
+  },
+  mounted: function () {
+    setTimeout(function () {
+      let resultWrapper = document.getElementById('result-wrapper')
+      resultWrapper.setAttribute('style', 'display: flex;')
+    }, 1000)
+  },
   created: function () {
     this.image_url = process.env.ROOT_API + this.serverResponse.image_url
     this.items = this.serverResponse.items

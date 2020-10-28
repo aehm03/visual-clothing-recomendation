@@ -40,9 +40,6 @@ canvas {
   border-radius: 5px;
   box-shadow: 3px 3px 3px lightgray;
 }
-.detected {
-  margin-top: 10px;
-}
 .product_image_matches {
   width: 100px;
 }
@@ -108,7 +105,7 @@ a:hover {
 #product_image {
     display: block;
     box-sizing: border-box;
-        margin: 0 auto;
+    margin: 0 auto;
 }
 
 #formatWarning {
@@ -146,6 +143,7 @@ html {
     width: 600px;
     padding: 0 20px 20px;
     margin: 0 auto;
+    transition: 1s;
   }
   #bbar{
     position: fixed;
@@ -386,4 +384,18 @@ html {
   .detect-item-card:hover {
     background: #edf6ff;
     cursor: pointer;
+  }
+  .detected {
+    margin-bottom: 10px;
+  }
+  @media only screen and (min-width: 1200px) {
+    .result-wrapper {
+      display: none;
+      width: 1200px;
+      position: absolute;
+    }
+    .detected {
+      width: 600px;
+      margin-left: 10px;
+    }
   }
