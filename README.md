@@ -3,7 +3,10 @@
 ![](vip-retrieval.mp4)
 
 # Setup
-* Create and activate virtualenv for backend in `venv`
+* Create and activate virtualenv for backend in `venv`: 
+  * `python -m venv venv`
+  * `source venv/bin/activate` 
+* Install packages: `pip install -r requirements.txt` (if an error occurs, re-run the command)
 
 ## Detection Model
 
@@ -32,11 +35,11 @@ Test matching: `curl -v POST http://localhost:5000/api/match -d @test_match.json
 
 
 ## Setup frontend
-*  `npm install` from frontend directory to install all npm packages
-*  `npm run build` from frontend directory to build the frontend
+* `npm install` from frontend directory to install all npm packages
+* `npm run build` from frontend directory to build the frontend
 
 ([frontend readme](frontend/README.md))
 
 # Run
-*  `npm run dev` for running the frontend
-* `python api-start` for  the api
+* `npm run dev` for running the frontend
+* `python api/api-start.py` for the api from project root directory

@@ -1,6 +1,8 @@
 import atexit
 import shutil
+import sys
 
+sys.path.append('.')
 from api import app
 
 
