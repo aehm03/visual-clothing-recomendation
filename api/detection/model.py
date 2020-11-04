@@ -489,7 +489,7 @@ class SSD300(nn.Module):
 
                     # Suppress boxes whose overlaps (with this box) are greater than maximum overlap
                     # Find such boxes and update suppress indices
-                    suppress = suppress | (overlap[box] > max_overlap)
+                    suppress = suppress | (overlap[box].to('cpu') > max_overlap)
 
                     # Don't suppress this box, even though it has an overlap of 1 with itself
                     suppress[box] = False
