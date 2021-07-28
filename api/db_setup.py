@@ -1,13 +1,11 @@
 import math
 import os
-import pickle
 import sys
 
 sys.path.append('.')
 
 import argparse
 from annoy import AnnoyIndex
-import pandas as pd
 from api import app, db
 from api.models import Product
 from sqlalchemy_utils import create_database, database_exists
@@ -15,21 +13,11 @@ from sqlalchemy_utils import create_database, database_exists
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--deepfashion_embeddings', type=str, required=True)
+    parser.add_argument('--fashion-dataset', type=str, required=True)
     return parser.parse_args()
 
 
-if __name__ == '__main__':
-
-    args = parse_args()
-    item_df = pd.read_json(args.deepfashion_embeddings, orient='table')
-
-    # filter on short sleeve tops (category_id == 1)
-    # items with style 0 have no match
-    item_df = item_df.loc[(item_df['category_id'] == 1) & (item_df['style'] > 0)]
-
-    # group by product
-    products = item_df.groupby(['item_group_id'])['image_id'].apply(','.join)
+def create_product_db(dataset_path):
 
     if not database_exists(app.config['SQLALCHEMY_DATABASE_URI']):
         create_database(app.config['SQLALCHEMY_DATABASE_URI'])
@@ -37,23 +25,48 @@ if __name__ == '__main__':
     db.drop_all()
     db.create_all()
 
-    # iterate over products and fill database
-    for group_id, image_id in products.iteritems():
-        product = Product(product_id=group_id, category_id=1, images=image_id)
-        db.session.add(product)
+    with open(os.path.join(dataset_path, 'styles.csv')) as f:
+        for line in f.readlines():
+            obj = [item.strip() for item in line.split(',')]
+            if obj[0].isdigit():
+                product = Product(product_id=int(obj[0]),
+                                  category_id=0,
+                                  display_name=obj[-1],
+                                  season=obj[-4],
+                                  usage=obj[-2],
+                                  color=obj[-5],
+                                  type=obj[-6])
+                db.session.add(product)
 
     db.session.commit()
 
-    # create index for matching
-    embedding_index = AnnoyIndex(128, 'euclidean')
-    embedding_index.on_disk_build(os.path.abspath('api/match/embeddings.ann'))
-    embedding_to_product = {}
-    for i, row in item_df.iterrows():
-        embedding_index.add_item(i, row['embedding_vector'])
-        embedding_to_product[i] = row['item_group_id']
 
-    n_trees = 4 * int(math.sqrt(len(item_df)))
+def create_index(dataset_path):
+    with open(os.path.join(dataset_path, 'embeddings.csv')) as f:
+
+        # create index for matching
+        embedding_index = AnnoyIndex(1000, 'euclidean')
+        embedding_index.on_disk_build(os.path.abspath('api/match/embeddings.ann'))
+
+        # skip header
+        f.readline()
+        size = 0
+        for line in f.readlines():
+            size +=1
+            obj = line.split(',')
+            embedding_index.add_item(int(obj[0]), [float(i) for i in obj[1:]])
+
+    # magic to compute optimal number of trees in ANNOY indez
+    n_trees = 4 * int(math.sqrt(size))
     embedding_index.build(n_trees)
 
-    with open(os.path.abspath('api/match/embedding_to_product.pickle'), 'wb') as file:
-        pickle.dump(embedding_to_product, file)
+
+def main(dataset_path):
+    create_product_db(dataset_path)
+    #create_index(dataset_path)
+
+
+if __name__ == '__main__':
+    args = parse_args()
+    main(args.fashion_dataset)
+

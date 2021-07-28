@@ -2,10 +2,12 @@
 
 ![](vip-retrieval.mp4)
 
+
+--- OUTDATED --
 # Setup
-* Create and activate virtualenv for backend in `venv`: 
+* Create and activate virtualenv for backend in `venv`:
   * `python -m venv venv`
-  * `source venv/bin/activate` 
+  * `source venv/bin/activate`
 * Install packages: `pip install -r requirements.txt` (if an error occurs, re-run the command)
 
 ## Detection Model

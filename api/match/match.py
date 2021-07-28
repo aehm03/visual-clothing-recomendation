@@ -3,9 +3,7 @@ import pickle
 
 import torch
 from annoy import AnnoyIndex
-from api.match.model import EmbedNetwork
-from torch import nn
-from torchvision import transforms
+from torchvision import transforms, models
 
 # initialize model to create embeddings
 img_transforms = transforms.Compose([
@@ -15,14 +13,12 @@ img_transforms = transforms.Compose([
 ])
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-checkpoint = os.path.join(os.path.dirname(__file__), 'embedding_weights.pkl')
-model = EmbedNetwork()
-model = nn.DataParallel(model)
-model.load_state_dict(torch.load(checkpoint, map_location=device))
+model = models.resnet50(pretrained=True)
+model.to(device)
 model.eval()
 
 # initialize index to retrieve nearest embeddings
-u = AnnoyIndex(128, 'euclidean')
+u = AnnoyIndex(1000, 'euclidean')
 u.load(os.path.join(os.path.dirname(__file__), 'embeddings.ann'))
 embedding_to_product = {}
 with open(os.path.join(os.path.dirname(__file__), 'embedding_to_product.pickle'), 'rb') as file:
@@ -31,18 +27,10 @@ with open(os.path.join(os.path.dirname(__file__), 'embedding_to_product.pickle')
 
 def match_products(image, n_matches=5):
     image = image.convert('RGB')
-    vec = img_transforms(image)
+    vec = img_transforms(image).to(device).unsqueeze(0)
+    embedding = model.forward(vec).detach().squeeze().cpu().numpy()
 
-    # Move to default device
-    vec = vec.to(device)
+    nearest = u.get_nns_by_vector(embedding, n=n_matches)
+    print(nearest)
+    return nearest
 
-    embedding = model(vec.unsqueeze(0))
-    embedding = embedding.cpu().detach().numpy()[0]
-
-    # this is a bit hacky, we can not gurantee to get n nearest products by looking for n nearest embeddings
-    # bc products have more than one image/embedding
-    # we take n*three, map to product unique id and truncate at n
-    # could still be less than n
-    nearest = u.get_nns_by_vector(embedding, n=n_matches * 3)
-    nearest_product = [embedding_to_product[image] for image in nearest]
-    return [x for i, x in enumerate(nearest_product) if nearest_product.index(x) == i][0:n_matches]

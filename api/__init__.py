@@ -9,7 +9,7 @@ app.config.from_object(__name__)
 
 UPLOAD_FOLDER = tempfile.mkdtemp()
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['PRODUCT_IMAGE_FOLDER'] = 'static/product-images'
+app.config['PRODUCT_IMAGE_FOLDER'] = '../fashion-dataset/images'
 
 # enable CORS
 # TODO replace cors with other method for vue frontend

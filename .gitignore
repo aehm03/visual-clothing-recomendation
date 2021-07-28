@@ -12,6 +12,7 @@ products.db
 api/match/embedding_to_product.pickle
 api/match/embeddings.ann
 embeddings/
+fashion-dataset/
 
 # Logs
 npm-debug.log

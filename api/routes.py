@@ -69,7 +69,6 @@ def get_image(image_id):
 def categories():
     """
     Returns all available product categories
-    TODO matching only works with "short sleeve tops"s!
     :return:  { categories: [(string)]}
     """
     return jsonify({'categories': [{'short sleeve top',
@@ -123,7 +122,9 @@ def get_product(product_id):
     p = Product.query.get(product_id)
     if p is None:
         abort(404)
-    return jsonify({'product_id': p.product_id, 'category_id': p.category_id, 'images': p.images.split(',')})
+    return jsonify({'product_id': p.product_id, 'category_id': p.category_id, 'images': [p.product_id],
+                    'name': p.display_name, 'season': p.season, 'usage': p.usage,
+                    'type': p.type, 'color': p.color})
 
 
 @app.route('/uploads/<filename>', methods=['GET'])
