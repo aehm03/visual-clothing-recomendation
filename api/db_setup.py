@@ -5,6 +5,7 @@ import sys
 sys.path.append('.')
 
 import argparse
+import pickle
 from annoy import AnnoyIndex
 from api import app, db
 from api.models import Product
@@ -48,17 +49,22 @@ def create_index(dataset_path):
         embedding_index = AnnoyIndex(1000, 'euclidean')
         embedding_index.on_disk_build(os.path.abspath('api/match/embeddings.ann'))
 
+        embedding_to_product = {}
+
         # skip header
         f.readline()
         size = 0
         for line in f.readlines():
-            size +=1
             obj = line.split(',')
-            embedding_index.add_item(int(obj[0]), [float(i) for i in obj[1:]])
+            embedding_index.add_item(size, [float(i) for i in obj[1:]])
+            embedding_to_product[size] = int(obj[0])
+            size += 1
 
     # magic to compute optimal number of trees in ANNOY indez
     n_trees = 4 * int(math.sqrt(size))
     embedding_index.build(n_trees)
+    with open('api/match/embedding_to_product.pickle', 'wb') as file:
+        pickle.dump(embedding_to_product, file)
 
 
 def main(dataset_path):
