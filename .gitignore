@@ -14,8 +14,7 @@ api/match/embeddings.ann
 embeddings/
 fashion-dataset/
 
-# Logs
-
+data/
 
 # Model weights
 *.pkl
